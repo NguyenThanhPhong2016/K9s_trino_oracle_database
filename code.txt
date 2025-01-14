@@ -1,0 +1,31 @@
+
+#configmapconfigmap
+kubectl create configmap trino-config --from-file=etc/config.properties --from-file=etc/jvm.config --from-file=etc/node.properties
+
+kubectl create configmap trino-catalog --from-file=etc/catalog/oracle.properties
+
+kubectl delete configmap trino-catalog
+kubectl delete configmap trino-config
+
+# yaml 
+# bat buoc theo thu tu 
+kubectl apply -f PersistentVolumeClaim.yaml
+
+kubectl apply -f trino-service.yaml
+kubectl apply -f trino-deployment.yaml
+
+# delete svc
+kubectl get svc
+kubectl delete svc trino-coordinator-service
+kubectl get deployment
+kubectl delete deployment trino-coordinator
+
+
+
+
+kubectl port-forward svc/example-trino-cluster-trino 8082:8080
+kubectl port-forward svc/trino-coordinator-service 8090:8083
+
+
+kubectl exec -it trino-coordinator-84747d46d6-xztbw -- ls -ld /var/trino
+

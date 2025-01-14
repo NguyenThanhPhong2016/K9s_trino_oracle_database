@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trino-coordinator
+spec:
+  replicas: 1
+  selector:   
+    matchLabels:
+      app: trino1
+  template:
+    metadata:
+      labels:
+        app: trino1
+    spec:
+      containers:
+      - name: trino
+        image: trinodb/trino:latest
+        ports:
+        - containerPort: 8085
+        volumeMounts:
+        - name: my-pvc-volume   # Tên volume khớp với khai báo trong phần volumes
+          mountPath: /var/trino/data
+        - name: config
+          mountPath: /etc/trino
+        - name: catalog
+          mountPath: /etc/trino/catalog
+      volumes:
+      - name: config
+        configMap:
+          name: trino-config
+      - name: catalog
+        configMap:
+          name: trino-catalog
+      - name: my-pvc-volume     # Tên volume
+        persistentVolumeClaim:
+          claimName: trino-data-pvc
